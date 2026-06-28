@@ -1,0 +1,182 @@
+CLASS DIAGRAM - Coffee Shop Ordering System
+============================================
+
+1. DECORATOR PATTERN
+--------------------
+┌─────────────────┐
+│    Beverage     │ (Abstract)
+├─────────────────┤
+│ - description   │
+├─────────────────┤
+│ + getDescription()│
+│ + cost()        │ (abstract)
+└─────────────────┘
+         △
+         │
+    ┌────┴──────────────────────────────────┐
+    │                                       │
+┌─────────┐                        ┌──────────────────┐
+│Espresso │                        │AddOnDecorator    │ (Abstract)
+│Latte    │                        ├──────────────────┤
+│Cappuccino│                       │ - beverage       │
+│Tea      │                        ├──────────────────┤
+└─────────┘                        │ + getDescription()│ (abstract)
+                                   │ + cost()         │ (abstract)
+                                   └──────────────────┘
+                                            △
+                                            │
+                                   ┌────────┴────────┐
+                                   │                 │
+                              ┌────────┐      ┌──────────┐
+                              │ Milk   │      │WhippedCream│
+                              │ Sugar  │      │Caramel     │
+                              └────────┘      └──────────┘
+
+Usage Example:
+--------------
+Beverage latte = new Latte();                    // Rs. 150
+latte = new Milk(latte);                         // Rs. 150 + 20 = 170
+latte = new Caramel(latte);                      // Rs. 170 + 25 = 195
+latte = new WhippedCream(latte);                 // Rs. 195 + 30 = 225
+// Description: "Latte, Milk, Caramel, Whipped Cream"
+
+
+2. FACTORY PATTERN
+------------------
+┌──────────────────────┐
+│  BeverageFactory     │
+├──────────────────────┤
+│ + createBeverage(type)│ ──→ Creates ──→ Espresso/Latte/Cappuccino/Tea
+└──────────────────────┘
+
+┌─────────────────┐
+│ BeverageType    │ (Enum)
+├─────────────────┤
+│ ESPRESSO        │
+│ LATTE           │
+│ CAPPUCCINO      │
+│ TEA             │
+└─────────────────┘
+
+Usage Example:
+--------------
+Beverage espresso = BeverageFactory.createBeverage(BeverageType.ESPRESSO);
+
+
+3. SINGLETON PATTERN
+--------------------
+┌────────────────────────┐
+│   OrderManager         │
+├────────────────────────┤
+│ - static instance      │ (private static)
+│ - orders: Map          │
+│ - orderCounter: int    │
+├────────────────────────┤
+│ - OrderManager()       │ (private constructor)
+│ + getInstance()        │ (static, synchronized)
+│ + createOrder()        │
+│ + getOrder()           │
+│ + processOrder()       │
+│ + printAllOrders()     │
+└────────────────────────┘
+
+Usage Example:
+--------------
+OrderManager manager1 = OrderManager.getInstance();
+OrderManager manager2 = OrderManager.getInstance();
+// manager1 == manager2 (same instance)
+
+
+4. OBSERVER PATTERN
+-------------------
+┌─────────────────────┐
+│      Order          │ (Subject)
+├─────────────────────┤
+│ - orderId           │
+│ - customerName      │
+│ - beverages: List   │
+│ - status            │
+│ - observers: List   │ ◇──────┐
+├─────────────────────┤        │
+│ + registerObserver()│        │
+│ + removeObserver()  │        │
+│ + notifyObservers() │        │
+│ + setStatus()       │        │
+└─────────────────────┘        │
+                               │
+                               │ notifies
+                               │
+                               ▽
+                    ┌──────────────────┐
+                    │ OrderObserver    │ (Interface)
+                    ├──────────────────┤
+                    │ + update(Order)  │
+                    └──────────────────┘
+                               △
+                               │
+          ┌────────────────────┼────────────────────┐
+          │                    │                    │
+┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+│CustomerNotifier │  │ KitchenDisplay  │  │ BillingSystem   │
+├─────────────────┤  ├─────────────────┤  ├─────────────────┤
+│ + update()      │  │ + update()      │  │ + update()      │
+└─────────────────┘  └─────────────────┘  └─────────────────┘
+
+┌─────────────┐
+│OrderStatus  │ (Enum)
+├─────────────┤
+│ PLACED      │
+│ PREPARING   │
+│ READY       │
+│ DELIVERED   │
+│ CANCELLED   │
+└─────────────┘
+
+Usage Example:
+--------------
+Order order = new Order("ORD001", "Alice");
+order.registerObserver(new CustomerNotifier());
+order.registerObserver(new KitchenDisplay());
+order.registerObserver(new BillingSystem());
+
+order.setStatus(OrderStatus.PREPARING);  // All observers notified
+order.setStatus(OrderStatus.READY);      // All observers notified again
+
+
+COMPLETE FLOW EXAMPLE
+----------------------
+1. OrderManager manager = OrderManager.getInstance();        [SINGLETON]
+2. Beverage latte = BeverageFactory.createBeverage(...);     [FACTORY]
+3. latte = new Milk(new Caramel(latte));                     [DECORATOR]
+4. Order order = manager.createOrder("Bob");
+5. order.addBeverage(latte);
+6. manager.processOrder(order.getOrderId());                 [OBSERVER - notifies all]
+
+
+DESIGN PRINCIPLES DEMONSTRATED
+-------------------------------
+✓ Single Responsibility Principle (SRP)
+  - Each class has one reason to change
+  - Beverage handles pricing, Order handles order logic, Observers handle notifications
+
+✓ Open/Closed Principle (OCP)
+  - Open for extension (new decorators, new observers) without modifying existing code
+
+✓ Liskov Substitution Principle (LSP)
+  - Decorators can replace base Beverage
+  - All observers can be used interchangeably
+
+✓ Interface Segregation Principle (ISP)
+  - OrderObserver interface has only one method
+
+✓ Dependency Inversion Principle (DIP)
+  - Order depends on OrderObserver interface, not concrete implementations
+
+
+KEY TEACHING POINTS
+--------------------
+1. Decorator allows unlimited combinations (Milk + Sugar + Caramel + ...)
+2. Factory centralizes and simplifies object creation
+3. Singleton ensures single source of truth for order management
+4. Observer enables loose coupling - observers don't know about each other
+5. Patterns work together to create flexible, maintainable design

@@ -1,0 +1,144 @@
+COFFEE SHOP ORDERING SYSTEM - Class 12
+========================================
+
+PROBLEM STATEMENT:
+------------------
+Design a Coffee Shop Ordering System that allows customers to order beverages with
+customizable add-ons. The system should track orders and notify relevant stakeholders
+(customers, kitchen, billing) about order status changes.
+
+REQUIREMENTS:
+-------------
+1. Support multiple beverage types: Espresso, Latte, Cappuccino, Tea
+2. Allow customers to add customizations: Milk, Sugar, Whipped Cream, Caramel
+3. Calculate total cost dynamically based on beverage and add-ons
+4. Track order status: PLACED -> PREPARING -> READY -> DELIVERED
+5. Notify multiple systems when order status changes
+6. Manage all orders through a centralized system
+
+DESIGN PATTERNS TO IMPLEMENT:
+------------------------------
+
+1. DECORATOR PATTERN
+   - Problem: Need to add optional features to beverages without modifying base classes
+   - Solution: Wrap beverages with add-on decorators
+   - Components:
+     * Beverage (abstract component)
+     * Concrete beverages: Espresso, Latte, Cappuccino, Tea
+     * AddOnDecorator (abstract decorator)
+     * Concrete decorators: Milk, Sugar, WhippedCream, Caramel
+
+2. FACTORY PATTERN
+   - Problem: Need a centralized way to create different beverage types
+   - Solution: BeverageFactory encapsulates beverage creation logic
+   - Benefit: Easy to add new beverage types without changing client code
+
+3. SINGLETON PATTERN
+   - Problem: Need exactly one OrderManager to coordinate all orders
+   - Solution: OrderManager with private constructor and getInstance() method
+   - Benefit: Centralized order management, prevents multiple instances
+
+4. OBSERVER PATTERN
+   - Problem: Multiple systems need to react to order status changes
+   - Solution: Order notifies registered observers when status changes
+   - Components:
+     * Order (Subject) - maintains list of observers
+     * OrderObserver (Observer interface)
+     * Concrete observers: CustomerNotifier, KitchenDisplay, BillingSystem
+
+CLASS STRUCTURE:
+----------------
+
+Beverage Hierarchy (Decorator Pattern):
+  Beverage (abstract)
+    ├── Espresso
+    ├── Latte
+    ├── Cappuccino
+    ├── Tea
+    └── AddOnDecorator (abstract)
+          ├── Milk
+          ├── Sugar
+          ├── WhippedCream
+          └── Caramel
+
+Factory:
+  BeverageFactory
+    └── createBeverage(BeverageType) : Beverage
+
+Singleton:
+  OrderManager
+    └── getInstance() : OrderManager
+
+Observer Pattern:
+  Order (Subject)
+  OrderObserver (interface)
+    ├── CustomerNotifier
+    ├── KitchenDisplay
+    └── BillingSystem
+
+SAMPLE USAGE:
+-------------
+
+// Factory Pattern - Create base beverage
+Beverage latte = BeverageFactory.createBeverage(BeverageType.LATTE);
+
+// Decorator Pattern - Add customizations
+latte = new Milk(latte);
+latte = new Caramel(latte);
+latte = new WhippedCream(latte);
+
+// Singleton Pattern - Get order manager
+OrderManager orderManager = OrderManager.getInstance();
+
+// Create order and add beverage
+Order order = orderManager.createOrder("Alice");
+order.addBeverage(latte);
+
+// Observer Pattern - Process order (notifies all observers)
+orderManager.processOrder(order.getOrderId());
+
+KEY LEARNING POINTS:
+--------------------
+1. Decorator Pattern allows adding behavior dynamically at runtime
+2. Multiple decorators can be stacked (composition over inheritance)
+3. Factory Pattern centralizes object creation
+4. Singleton ensures single instance and global access point
+5. Observer Pattern enables loose coupling between objects
+6. Observers are automatically notified when subject state changes
+
+PRICING:
+--------
+Base Beverages:
+- Espresso: Rs. 120
+- Latte: Rs. 150
+- Cappuccino: Rs. 140
+- Tea: Rs. 50
+
+Add-ons:
+- Milk: Rs. 20
+- Sugar: Rs. 5
+- Whipped Cream: Rs. 30
+- Caramel: Rs. 25
+
+EXPECTED OUTPUT:
+----------------
+The demo shows:
+1. Simple orders with base beverages
+2. Customized orders with multiple add-ons
+3. Observer notifications at each status change
+4. Dynamic cost calculation based on decorators
+5. All four design patterns working together
+
+FILES:
+------
+- CoffeeShopApp.java (Main application)
+- Beverage.java (Abstract component)
+- Espresso.java, Latte.java, Cappuccino.java, Tea.java (Concrete components)
+- AddOnDecorator.java (Abstract decorator)
+- Milk.java, Sugar.java, WhippedCream.java, Caramel.java (Concrete decorators)
+- BeverageFactory.java (Factory)
+- OrderManager.java (Singleton)
+- Order.java (Subject for Observer pattern)
+- OrderObserver.java (Observer interface)
+- CustomerNotifier.java, KitchenDisplay.java, BillingSystem.java (Concrete observers)
+- BeverageType.java, OrderStatus.java (Enums)
