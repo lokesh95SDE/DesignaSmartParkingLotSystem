@@ -1,13 +1,14 @@
 package org.ParkingLotSystem.dto;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-public class ExitResponseDto {
-
-    private Long ticketId;
-    private LocalDate entryTime;
-    private LocalDate exitTIme;
-    private Double amount;
-    private String message;
-
+public record ExitResponseDto(
+        Long ticketId,
+        LocalDateTime entryTime,
+        LocalDateTime exitTime,
+        long parkedMinutes,
+        BigDecimal amount,
+        String message
+) {
 }

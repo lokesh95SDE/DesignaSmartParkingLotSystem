@@ -1,14 +1,12 @@
 package org.ParkingLotSystem.dto;
 
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
-public class EntryResponseDto {
-
-    private Long ticketId;
-    private LocalDate EntryTime;
-    private String parkingSpotNumber;
-    private int floorNumber;
-    private String message;
-
+public record EntryResponseDto(
+        Long ticketId,
+        LocalDateTime entryTime,
+        String parkingSpotNumber,
+        int floorNumber,
+        String message
+) {
 }
