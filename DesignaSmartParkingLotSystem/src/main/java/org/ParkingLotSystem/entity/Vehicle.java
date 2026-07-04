@@ -4,28 +4,30 @@ import jakarta.persistence.*;
 import org.ParkingLotSystem.enums.VehicleType;
 
 @Entity
+@Table(name = "vehicles", uniqueConstraints = @UniqueConstraint(columnNames = "registration_number"))
 public class Vehicle {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long vehicleId;
+
+    @Column(name = "registration_number", nullable = false, unique = true)
     private String registrationNumber;
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private VehicleType vehicleType;
 
+    protected Vehicle() {
+    }
 
-    public Vehicle(Long vehicleId, String registrationNumber, VehicleType vehicleType) {
-        this.vehicleId = vehicleId;
+    public Vehicle(String registrationNumber, VehicleType vehicleType) {
         this.registrationNumber = registrationNumber;
         this.vehicleType = vehicleType;
     }
 
     public Long getVehicleId() {
         return vehicleId;
-    }
-
-    public void setVehicleId(Long vehicleId) {
-        this.vehicleId = vehicleId;
     }
 
     public String getRegistrationNumber() {

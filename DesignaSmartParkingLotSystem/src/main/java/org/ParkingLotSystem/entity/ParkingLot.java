@@ -1,31 +1,37 @@
 package org.ParkingLotSystem.entity;
-import java.util.List;
+
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
+@Table(name = "parking_lots")
 public class ParkingLot {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long lotId;
-    private String address;
-    private String name;
-    @OneToMany(mappedBy = "parkingLot")
-    private List<Floor> floors;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long lotId;
 
-    public ParkingLot(long lotId, String address, String name, List<Floor> floors) {
-        this.lotId = lotId;
+    @Column(nullable = false)
+    private String address;
+
+    @Column(nullable = false)
+    private String name;
+
+    @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Floor> floors = new ArrayList<>();
+
+    protected ParkingLot() {
+    }
+
+    public ParkingLot(String address, String name) {
         this.address = address;
         this.name = name;
-        this.floors = floors;
     }
 
-    public long getLotId() {
+    public Long getLotId() {
         return lotId;
-    }
-
-    public void setLotId(long lotId) {
-        this.lotId = lotId;
     }
 
     public String getAddress() {
@@ -48,7 +54,8 @@ public class ParkingLot {
         return floors;
     }
 
-    public void setFloors(List<Floor> floors) {
-        this.floors = floors;
+    public void addFloor(Floor floor) {
+        floors.add(floor);
+        floor.setParkingLot(this);
     }
 }

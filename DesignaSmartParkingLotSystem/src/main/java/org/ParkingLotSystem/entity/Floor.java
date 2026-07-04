@@ -2,40 +2,37 @@ package org.ParkingLotSystem.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-
-
 @Entity
+@Table(name = "floors")
 public class Floor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long floorId;
 
+    @Column(nullable = false)
     private Integer floorNumber;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parking_lot_id", nullable = false)
     private ParkingLot parkingLot;
 
-    @OneToMany(mappedBy = "floor")
-    private List<ParkingSpot> parkingSpots;
+    @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParkingSpot> parkingSpots = new ArrayList<>();
 
-
-    public Floor(Long floorId, Integer floorNumber, ParkingLot parkingLot, List<ParkingSpot> parkingSpots) {
-        this.floorId = floorId;
-        this.floorNumber = floorNumber;
-        this.parkingLot = parkingLot;
-        this.parkingSpots = parkingSpots;
+    protected Floor() {
     }
 
+    public Floor(Integer floorNumber, ParkingLot parkingLot) {
+        this.floorNumber = floorNumber;
+        this.parkingLot = parkingLot;
+    }
 
     public Long getFloorId() {
         return floorId;
-    }
-
-    public void setFloorId(Long floorId) {
-        this.floorId = floorId;
     }
 
     public Integer getFloorNumber() {
@@ -58,7 +55,8 @@ public class Floor {
         return parkingSpots;
     }
 
-    public void setParkingSpots(List<ParkingSpot> parkingSpots) {
-        this.parkingSpots = parkingSpots;
+    public void addSpot(ParkingSpot parkingSpot) {
+        parkingSpots.add(parkingSpot);
+        parkingSpot.setFloor(this);
     }
 }

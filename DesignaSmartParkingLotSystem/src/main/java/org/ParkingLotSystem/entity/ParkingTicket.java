@@ -2,42 +2,44 @@ package org.ParkingLotSystem.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "parking_tickets")
 public class ParkingTicket {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ticketId;
 
+    @Column(nullable = false)
     private LocalDateTime entryTime;
 
     private LocalDateTime exitTime;
 
-    private Double amount;
+    @Column(precision = 10, scale = 2)
+    private BigDecimal amount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parking_spot_id", nullable = false)
     private ParkingSpot parkingSpot;
 
-    public ParkingTicket(Long ticketId, LocalDateTime entryTime, LocalDateTime exitTime, Double amount, Vehicle vehicle, ParkingSpot parkingSpot) {
-        this.ticketId = ticketId;
+    protected ParkingTicket() {
+    }
+
+    public ParkingTicket(LocalDateTime entryTime, Vehicle vehicle, ParkingSpot parkingSpot) {
         this.entryTime = entryTime;
-        this.exitTime = exitTime;
-        this.amount = amount;
         this.vehicle = vehicle;
         this.parkingSpot = parkingSpot;
     }
 
     public Long getTicketId() {
         return ticketId;
-    }
-
-    public void setTicketId(Long ticketId) {
-        this.ticketId = ticketId;
     }
 
     public LocalDateTime getEntryTime() {
@@ -56,11 +58,11 @@ public class ParkingTicket {
         this.exitTime = exitTime;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -68,15 +70,7 @@ public class ParkingTicket {
         return vehicle;
     }
 
-    public void setVehicle(Vehicle vehicle) {
-        this.vehicle = vehicle;
-    }
-
     public ParkingSpot getParkingSpot() {
         return parkingSpot;
-    }
-
-    public void setParkingSpot(ParkingSpot parkingSpot) {
-        this.parkingSpot = parkingSpot;
     }
 }
