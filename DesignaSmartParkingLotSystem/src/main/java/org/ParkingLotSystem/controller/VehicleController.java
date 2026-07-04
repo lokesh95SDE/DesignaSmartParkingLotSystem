@@ -1,7 +1,7 @@
 package org.ParkingLotSystem.controller;
 
-import org.ParkingLotSystem.entity.Vehicle;
-import org.ParkingLotSystem.service.VehicleService;
+import org.ParkingLotSystem.dto.ParkedVehicleResponseDto;
+import org.ParkingLotSystem.service.ParkingService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,14 +12,14 @@ import java.util.List;
 @RequestMapping("/api/v1/vehicles")
 public class VehicleController {
 
-    private final VehicleService vehicleService;
+    private final ParkingService parkingService;
 
-    public VehicleController(VehicleService vehicleService) {
-        this.vehicleService = vehicleService;
+    public VehicleController(ParkingService parkingService) {
+        this.parkingService = parkingService;
     }
 
-    @GetMapping
-    public List<Vehicle> vehiclesParked() {
-        return vehicleService.findAll();
+    @GetMapping("/parked")
+    public List<ParkedVehicleResponseDto> vehiclesParked() {
+        return parkingService.getParkedVehicles();
     }
 }
