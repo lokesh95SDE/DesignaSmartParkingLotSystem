@@ -68,9 +68,7 @@ public class ParkingService {
                 ));
 
         ParkingSpot parkingSpot = spotAllocationService.allocateSpot(entryRequestDto.vehicleType().getRequiredSpotType());
-        parkingSpot.setSpotStatus(SpotStatus.OCCUPIED);
         parkingSpot.setCurrentVehicle(vehicle);
-        parkingSlotRepository.save(parkingSpot);
 
         LocalDateTime entryTime = LocalDateTime.now(clock);
         ParkingTicket parkingTicket = new ParkingTicket(entryTime, vehicle, parkingSpot);
